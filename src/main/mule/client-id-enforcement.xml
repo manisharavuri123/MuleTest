@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b032b6f4-1697-4e46-b7ce-d2389d2936db" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<api-gateway:autodiscovery apiId="16698236" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="83ba7609-fe5e-49fe-83e0-0556d0fc4a1c" flowRef="client-id-enforcementFlow" />
+	<flow name="client-id-enforcementFlow" doc:id="e08462e1-40a8-41d6-b50d-022043e2f8a1" >
+		<http:listener doc:name="Listener" doc:id="035bc0de-532a-4b2e-a185-f14f8f2f3567" config-ref="HTTP_Listener_config" path="testapi"/>
+		<logger level="INFO" doc:name="Logger" doc:id="685e93a9-576b-4afa-a727-3c7f2c5c0db7" message="Test Data"/>
+		<ee:transform doc:name="Transform Message" doc:id="c7a5f6a9-aa86-4d13-8f79-afa806bb6acb">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	name : payload.firstname,
+	phone: payload.phoneno,
+	city : payload.area
+ 	
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="a0b30d00-139e-4baf-9e89-aec0e03c8b92" message="**Flow Ended**"/>
+	</flow>
+</mule>
